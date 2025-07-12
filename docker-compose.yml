@@ -1,0 +1,13 @@
+services:
+  api: &main_app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: diagnosis_service:${DIAGNOSIS_SERVICE_VERSION:-latest}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      DIAGNOSIS_SERVICE_HOST: 0.0.0.0
+
+
