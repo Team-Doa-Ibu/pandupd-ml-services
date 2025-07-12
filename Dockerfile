@@ -1,25 +1,25 @@
 FROM python:3.11.4-slim-bullseye AS prod
 
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-RUN pip install poetry==1.8.2
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
 
-# Configuring poetry
-RUN poetry config virtualenvs.create false
-RUN poetry config cache-dir /tmp/poetry_cache
-
-# Copying requirements of a project
-COPY pyproject.toml poetry.lock /app/src/
 WORKDIR /app/src
 
-# Installing requirements
-RUN --mount=type=cache,target=/tmp/poetry_cache poetry install --only main
+COPY pyproject.toml uv.lock ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-install-project --no-dev
 
-# Copying actuall application
-COPY . /app/src/
-RUN --mount=type=cache,target=/tmp/poetry_cache poetry install --only main
+COPY . .
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
-CMD ["/usr/local/bin/python", "-m", "diagnosis_service"]
+ENV PATH="/app/src/.venv/bin:$PATH"
+
+CMD ["python", "-m", "diagnosis_service"]
 
 FROM prod AS dev
 
-RUN --mount=type=cache,target=/tmp/poetry_cache poetry install
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen
