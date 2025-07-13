@@ -5,10 +5,10 @@ from pydub import AudioSegment
 from pydub.silence import split_on_silence
 
 from diagnosis_service.utils.voice_measurements_model.feature_extraction import (
-    Feature_Extraction,
+    FeatureExtraction,
 )
 
-f = Feature_Extraction()
+f = FeatureExtraction()
 
 
 def process_single_file_for_prediction(file_path: str) -> pd.DataFrame | None:

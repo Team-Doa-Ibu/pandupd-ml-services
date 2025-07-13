@@ -28,7 +28,7 @@ class VoiceMeasurementService:
         with model_path.open("rb") as f:
             return pickle.load(f)  # noqa: S301
 
-    def preprocess_audio(self, file_path: str) -> np.ndarray:
+    def preprocess_audio(self, file_path: str) -> np.ndarray[Any, Any]:
         """Preprocess audio file for prediction."""
         processed_data = process_single_file_for_prediction(file_path)
         if processed_data is None:
@@ -38,7 +38,7 @@ class VoiceMeasurementService:
 
     def predict(
         self,
-        preprocessed_data: np.ndarray,
+        preprocessed_data: np.ndarray[Any, Any],
     ) -> Tuple[Optional[bool], Optional[float], Optional[str]]:
         """Predict voice measurement from preprocessed data."""
         try:

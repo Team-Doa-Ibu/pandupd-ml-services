@@ -1,3 +1,5 @@
+from typing import Any
+
 import numpy as np
 import pandas as pd
 import parselmouth
@@ -8,8 +10,8 @@ class FeatureExtraction:
     """Feature extraction class for extracting features from each voice sample."""
 
     def __init__(self) -> None:
-        self.acoustic_features = []
-        self.mfcc = []
+        self.acoustic_features: list[dict[str, float]] = []
+        self.mfcc: list[np.ndarray[Any, Any]] = []
 
     def extract_acoustic_features(
         self,
@@ -17,7 +19,7 @@ class FeatureExtraction:
         f0_min: int = 75,
         f0_max: int = 500,
         unit: str = "Hertz",
-    ) -> dict:
+    ) -> dict[str, float] | None:
         """
         Extract acoustic features from a single .wav file.
 
@@ -141,7 +143,7 @@ class FeatureExtraction:
         except Exception:
             return None
 
-    def extract_mfcc(self, voice_sample: str) -> np.ndarray:
+    def extract_mfcc(self, voice_sample: str) -> np.ndarray[Any, Any] | None:
         """Extract MFCC from a single .wav file."""
         try:
             sound = parselmouth.Sound(voice_sample)
@@ -152,7 +154,7 @@ class FeatureExtraction:
         except Exception:
             return None
 
-    def process_single_file(self, file_path: str) -> pd.DataFrame:
+    def process_single_file(self, file_path: str) -> pd.DataFrame | None:
         """Process a single .wav file and extract both acoustic and MFCC features."""
         try:
             from pathlib import Path
