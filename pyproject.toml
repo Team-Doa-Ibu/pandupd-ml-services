@@ -42,6 +42,7 @@ dev = [
     "pytest-env>=1.1.3,<2",
     "httpx>=0.27.0,<0.28",
     "pytest-httpserver>=1.0.0,<2",
+    "types-requests>=2.31.0,<3",
 ]
 
 [tool.isort]
