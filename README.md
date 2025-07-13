@@ -1,4 +1,4 @@
-## Uv
+## UV
 
 This project uses uv for dependency management
 tool.
@@ -14,7 +14,7 @@ This will start the server on the configured host.
 
 You can find swagger documentation at `/api/docs`.
 
-You can read more about poetry here: https://python-poetry.org/
+You can read more about uv here: https://docs.astral.sh/uv
 
 ## Docker
 
