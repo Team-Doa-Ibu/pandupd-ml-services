@@ -32,7 +32,7 @@ async def diagnose(request: DiagnosisRequest) -> DiagnosisResponse:
                     "vm_prediction": vm_result.get("vm_prediction"),
                     "vm_confidence": vm_result.get("vm_confidence"),
                     "vm_error": vm_result.get("error"),
-                }
+                },
             )
             if vm_result.get("error"):
                 errors.append("Voice measurement failed.")
@@ -50,7 +50,7 @@ async def diagnose(request: DiagnosisRequest) -> DiagnosisResponse:
                     "hw_prediction": hw_result.get("hw_prediction"),
                     "hw_confidence": hw_result.get("hw_confidence"),
                     "hw_error": hw_result.get("error"),
-                }
+                },
             )
             if hw_result.get("error"):
                 errors.append("Handwriting diagnosis failed.")
