@@ -1,12 +1,11 @@
-import os
-import tempfile
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 class HandwritingService():
     """Placeholder service for handwriting diagnosis."""
 
     def predict_from_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Predict handwriting diagnosis from request data."""
         hw_url = request.get("hw_url")
         if not hw_url:
             return {"hw_error": "Missing hw_url"}
