@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 
-class HandwritingService():
+class HandwritingService:
     """Placeholder service for handwriting diagnosis."""
 
     def predict_from_request(self, request: Dict[str, Any]) -> Dict[str, Any]:

@@ -1,4 +1,3 @@
-
 import numpy as np
 import pandas as pd
 import parselmouth
@@ -43,35 +42,86 @@ class FeatureExtraction:
             harmonicity = call(sound, "To Harmonicity (cc)", 0.01, f0_min, 0.1, 1.0)
             hnr = call(harmonicity, "Get mean", 0, 0)
             point_process = call(
-                sound, "To PointProcess (periodic, cc)", f0_min, f0_max,
+                sound,
+                "To PointProcess (periodic, cc)",
+                f0_min,
+                f0_max,
             )
             jitter_relative = call(
-                point_process, "Get jitter (local)", 0, 0, 0.0001, 0.02, 1.3,
+                point_process,
+                "Get jitter (local)",
+                0,
+                0,
+                0.0001,
+                0.02,
+                1.3,
             )
             jitter_absolute = call(
-                point_process, "Get jitter (local, absolute)", 0, 0, 0.0001, 0.02, 1.3,
+                point_process,
+                "Get jitter (local, absolute)",
+                0,
+                0,
+                0.0001,
+                0.02,
+                1.3,
             )
             jitter_rap = call(
-                point_process, "Get jitter (rap)", 0, 0, 0.0001, 0.02, 1.3,
+                point_process,
+                "Get jitter (rap)",
+                0,
+                0,
+                0.0001,
+                0.02,
+                1.3,
             )
             jitter_ppq5 = call(
-                point_process, "Get jitter (ppq5)", 0, 0, 0.0001, 0.02, 1.3,
+                point_process,
+                "Get jitter (ppq5)",
+                0,
+                0,
+                0.0001,
+                0.02,
+                1.3,
             )
             shimmer_relative = call(
-                [sound, point_process], "Get shimmer (local)", 0, 0, 0.0001, 0.02, 1.3,
+                [sound, point_process],
+                "Get shimmer (local)",
+                0,
+                0,
+                0.0001,
+                0.02,
+                1.3,
                 1.6,
             )
             shimmer_local_db = call(
-                [sound, point_process], "Get shimmer (local_dB)", 0, 0, 0.0001, 0.02,
-                1.3, 1.6,
+                [sound, point_process],
+                "Get shimmer (local_dB)",
+                0,
+                0,
+                0.0001,
+                0.02,
+                1.3,
+                1.6,
             )
             shimmer_apq3 = call(
-                [sound, point_process], "Get shimmer (apq3)", 0, 0, 0.0001, 0.02,
-                1.3, 1.6,
+                [sound, point_process],
+                "Get shimmer (apq3)",
+                0,
+                0,
+                0.0001,
+                0.02,
+                1.3,
+                1.6,
             )
             shimmer_apq5 = call(
-                [sound, point_process], "Get shimmer (apq5)", 0, 0, 0.0001, 0.02,
-                1.3, 1.6,
+                [sound, point_process],
+                "Get shimmer (apq5)",
+                0,
+                0,
+                0.0001,
+                0.02,
+                1.3,
+                1.6,
             )
 
             return {
@@ -106,6 +156,7 @@ class FeatureExtraction:
         """Process a single .wav file and extract both acoustic and MFCC features."""
         try:
             from pathlib import Path
+
             if not Path(file_path).exists():
                 return None
 
@@ -119,10 +170,7 @@ class FeatureExtraction:
             if acoustic_features and mfcc_features is not None:
                 data = {
                     **acoustic_features,
-                    **{
-                        f"mfcc_{i}": mfcc
-                        for i, mfcc in enumerate(mfcc_features)
-                    },
+                    **{f"mfcc_{i}": mfcc for i, mfcc in enumerate(mfcc_features)},
                 }
                 return pd.DataFrame([data])
             return None

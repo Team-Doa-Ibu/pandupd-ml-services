@@ -10,6 +10,7 @@ from diagnosis_service.utils.voice_measurements_model.feature_extraction import 
 
 f = Feature_Extraction()
 
+
 def process_single_file_for_prediction(file_path: str) -> pd.DataFrame | None:
     """
     Process a single .wav file for prediction by extracting acoustic and MFCC features.

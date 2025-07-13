@@ -11,7 +11,7 @@ from diagnosis_service.utils.voice_measurements_model.mdvr_extraction import (
 )
 
 
-class VoiceMeasurementService():
+class VoiceMeasurementService:
     """Service for voice measurement prediction using machine learning model."""
 
     def __init__(self) -> None:
@@ -37,7 +37,8 @@ class VoiceMeasurementService():
         return self.scaler.fit_transform(x_test)
 
     def predict(
-        self, preprocessed_data: np.ndarray,
+        self,
+        preprocessed_data: np.ndarray,
     ) -> Tuple[Optional[bool], Optional[float], Optional[str]]:
         """Predict voice measurement from preprocessed data."""
         try:
@@ -93,6 +94,7 @@ class VoiceMeasurementService():
         try:
             # NOTE: This may need to be extracted to a separate utility function
             import requests
+
             response = requests.get(str(vm_url), timeout=600)
             response.raise_for_status()
             with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_file:
@@ -105,6 +107,7 @@ class VoiceMeasurementService():
         finally:
             if temp_file_path and Path(temp_file_path).exists():
                 from contextlib import suppress
+
                 with suppress(Exception):
                     Path(temp_file_path).unlink()
         return result

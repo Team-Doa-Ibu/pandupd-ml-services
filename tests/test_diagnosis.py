@@ -31,7 +31,8 @@ async def test_vm_diagnosis_failed_download(httpserver: HTTPServer) -> None:
     httpserver.expect_request("/audio.wav").respond_with_data(status=404)
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.post(
-            "/api/diagnosis", json={"vm_url": httpserver.url_for("/audio.wav")},
+            "/api/diagnosis",
+            json={"vm_url": httpserver.url_for("/audio.wav")},
         )
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
@@ -44,14 +45,17 @@ async def test_vm_diagnosis_success(httpserver: HTTPServer) -> None:
     """Test successful voice measurement diagnosis."""
     app = get_app()
     from pathlib import Path
+
     with Path("tests/assets/sample.wav").open("rb") as f:
         audio_data = f.read()
     httpserver.expect_request("/audio.wav").respond_with_data(
-        audio_data, content_type="audio/wav",
+        audio_data,
+        content_type="audio/wav",
     )
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.post(
-            "/api/diagnosis", json={"vm_url": httpserver.url_for("/audio.wav")},
+            "/api/diagnosis",
+            json={"vm_url": httpserver.url_for("/audio.wav")},
         )
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
@@ -67,7 +71,8 @@ async def test_hw_diagnosis_success(httpserver: HTTPServer) -> None:
     httpserver.expect_request("/image.jpg").respond_with_data(b"fake-image-data")
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.post(
-            "/api/diagnosis", json={"hw_url": httpserver.url_for("/image.jpg")},
+            "/api/diagnosis",
+            json={"hw_url": httpserver.url_for("/image.jpg")},
         )
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
@@ -81,10 +86,12 @@ async def test_multi_modal_diagnosis_success(httpserver: HTTPServer) -> None:
     """Test successful multi-modal diagnosis."""
     app = get_app()
     from pathlib import Path
+
     with Path("tests/assets/sample.wav").open("rb") as f:
         audio_data = f.read()
     httpserver.expect_request("/audio.wav").respond_with_data(
-        audio_data, content_type="audio/wav",
+        audio_data,
+        content_type="audio/wav",
     )
     httpserver.expect_request("/image.jpg").respond_with_data(b"fake-image-data")
 
