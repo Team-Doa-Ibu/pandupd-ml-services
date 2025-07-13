@@ -1,9 +1,12 @@
 from fastapi import APIRouter, HTTPException
 from loguru import logger
 
-from diagnosis_service.web.api.diagnosis.schema import DiagnosisRequest, DiagnosisResponse
-from diagnosis_service.services.voice_measurement import VoiceMeasurementService
 from diagnosis_service.services.handwriting import HandwritingService
+from diagnosis_service.services.voice_measurement import VoiceMeasurementService
+from diagnosis_service.web.api.diagnosis.schema import (
+    DiagnosisRequest,
+    DiagnosisResponse,
+)
 
 router = APIRouter()
 
@@ -12,9 +15,7 @@ hw_service = HandwritingService()
 
 @router.post("/diagnosis", response_model=DiagnosisResponse)
 async def diagnose(request: DiagnosisRequest) -> DiagnosisResponse:
-    """
-    Performs diagnosis based on the provided URLs.
-    """
+    """Performs diagnosis based on the provided URLs."""
     if not request.vm_url and not request.hw_url:
         raise HTTPException(status_code=400, detail="No diagnosis URL provided.")
 

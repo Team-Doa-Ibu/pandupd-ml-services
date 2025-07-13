@@ -1,6 +1,6 @@
 from fastapi.routing import APIRouter
 
-from diagnosis_service.web.api import echo, monitoring, diagnosis
+from diagnosis_service.web.api import diagnosis, echo, monitoring
 
 api_router = APIRouter()
 api_router.include_router(monitoring.router)
