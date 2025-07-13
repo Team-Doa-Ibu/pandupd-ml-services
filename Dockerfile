@@ -1,4 +1,4 @@
-FROM python:3.11.4-slim-bullseye AS prod
+FROM python:3.11-slim AS prod
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
