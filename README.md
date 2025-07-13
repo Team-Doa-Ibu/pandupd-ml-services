@@ -7,7 +7,7 @@ To run the project use this set of commands:
 
 ```bash
 uv sync
-uv run python -m diagnosis_servic
+uv run python -m diagnosis_service
 ```
 
 This will start the server on the configured host.
