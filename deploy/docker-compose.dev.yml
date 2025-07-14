@@ -5,9 +5,11 @@ services:
     - "8000:8000"
     build:
       context: .
+      target: dev
     volumes:
       # Adds current directory as volume.
     - .:/app/src/
+    - venv:/app/src/.venv
     environment:
       # Enables autoreload.
       DIAGNOSIS_SERVICE_RELOAD: "True"
