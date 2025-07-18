@@ -59,9 +59,18 @@ async def diagnose(request: DiagnosisRequest) -> DiagnosisResponse:
             results["hw_error"] = str(e)
             errors.append("Handwriting diagnosis failed unexpectedly.")
 
-    success = not errors
-    message = "Diagnosis completed."
-    if errors:
-        message = "Diagnosis completed with errors: " + " ".join(errors)
+    # Check if both predictions are missing/null
+    both_missing = (
+        results.get("hw_prediction") is None and results.get("vm_prediction") is None
+    )
+
+    if both_missing:
+        success = False
+        message = "No diagnosis could be made from the provided data."
+    else:
+        success = not errors
+        message = "Diagnosis completed."
+        if errors:
+            message = "Diagnosis completed with errors: " + " ".join(errors)
 
     return DiagnosisResponse(success=success, message=message, **results)
