@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     # E.G. http://localhost:4317
     opentelemetry_endpoint: Optional[str] = None
 
+    hw_model_path: str = "diagnosis_service/models/inception_v3_digital_spiral_v1.onnx"
+    vm_model_path: str = "diagnosis_service/models/model_vm_mdvr-kcl_knn.bin"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_prefix="DIAGNOSIS_SERVICE_",
