@@ -1,11 +1,13 @@
+import logging
 import pickle
-import tempfile
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
+from diagnosis_service.settings import settings
+from diagnosis_service.utils.download import download_file
 from diagnosis_service.utils.voice_measurements_model.mdvr_extraction import (
     process_single_file_for_prediction,
 )
@@ -14,15 +16,16 @@ from diagnosis_service.utils.voice_measurements_model.mdvr_extraction import (
 class VoiceMeasurementService:
     """Service for voice measurement prediction using machine learning model."""
 
-    def __init__(self) -> None:
+    def __init__(self, model_path: Optional[str] = None) -> None:
+        if model_path is None:
+            model_path = settings.vm_model_path
+        self.model_path = model_path
         self.model = self._load_model()
         self.scaler = MinMaxScaler()
 
     def _load_model(self) -> Any:
 
-        model_path = (
-            Path(__file__).parent.parent / "models" / "model_vm_mdvr-kcl_knn.bin"
-        )
+        model_path = Path(self.model_path)
         if not model_path.exists():
             raise FileNotFoundError(f"Model file not found at {model_path}")
         with model_path.open("rb") as f:
@@ -92,22 +95,16 @@ class VoiceMeasurementService:
         if not vm_url:
             return result
         try:
-            # NOTE: This may need to be extracted to a separate utility function
-            import requests
-
-            response = requests.get(str(vm_url), timeout=600)
-            response.raise_for_status()
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_file:
-                temp_file.write(response.content)
-                temp_file_path = temp_file.name
+            temp_file_path = download_file(str(vm_url), suffix=".wav")
             result = self.predict_from_file(temp_file_path)
             self.cleanup_temp_files(temp_file_path)
         except Exception as e:
             result["error"] = str(e)
         finally:
             if temp_file_path and Path(temp_file_path).exists():
-                from contextlib import suppress
-
-                with suppress(Exception):
+                try:
                     Path(temp_file_path).unlink()
+                except Exception as ex:
+                    logging.error(f"Failed to delete temp file {temp_file_path}: {ex}")
+
         return result
