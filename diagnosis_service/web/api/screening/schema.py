@@ -4,8 +4,8 @@ from fastapi import UploadFile
 from pydantic import BaseModel, Field
 
 
-class DiagnosisRequest(BaseModel):
-    """Request schema for multi-modal diagnosis endpoint."""
+class ScreeningRequest(BaseModel):
+    """Request schema for multi-modal screening endpoint."""
 
     vm_file: Optional[UploadFile] = Field(
         None,
@@ -17,36 +17,38 @@ class DiagnosisRequest(BaseModel):
     )
 
 
-class DiagnosisResponse(BaseModel):
-    """Response schema for multi-modal diagnosis endpoint."""
+class ScreeningResponse(BaseModel):
+    """Response schema for multi-modal screening."""
 
     success: bool = Field(
         ...,
-        description=("Overall status of the diagnosis request"),
+        description=("Overall status of the screening process"),
     )
     vm_prediction: Optional[bool] = Field(
         None,
-        description=("Voice measurement prediction result"),
+        description=("Final voice measurement prediction result"),
     )
     vm_confidence: Optional[str] = Field(
         None,
-        description=("Voice measurement confidence score"),
+        description=("Final voice measurement confidence score in percentage"),
     )
     vm_error: Optional[str] = Field(
         None,
-        description=("Error message if voice measurement diagnosis failed"),
+        description=("Error message if voice measurement prediction failed"),
     )
     hw_prediction: Optional[bool] = Field(
         None,
-        description=("Handwriting prediction result"),
+        description=("Final handwriting image classification result"),
     )
     hw_confidence: Optional[str] = Field(
         None,
-        description=("Handwriting confidence score"),
+        description=(
+            "Final handwriting image classification confidence score in percentage"
+        ),
     )
     hw_error: Optional[str] = Field(
         None,
-        description=("Error message if handwriting diagnosis failed"),
+        description=("Error message if handwriting image classification failed"),
     )
     message: str = Field(
         ...,
