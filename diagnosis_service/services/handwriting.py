@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 import onnxruntime as ort
-import requests
+from loguru import logger
 from PIL import Image
 
 from diagnosis_service.settings import settings
@@ -46,21 +46,17 @@ class HandwritingService:
         e_x = np.exp(x - np.max(x, axis=axis, keepdims=True))
         return e_x / e_x.sum(axis=axis, keepdims=True)
 
-    def predict_from_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
-        """Predict handwriting diagnosis from request data."""
+    def predict_from_file_content(self, image_bytes: bytes) -> Dict[str, Any]:
+        """Predict handwriting diagnosis from file content."""
 
-        hw_url = request.get("hw_url")
-        if not hw_url:
+        if not image_bytes:
             return {
                 "hw_prediction": None,
                 "hw_confidence": None,
-                "hw_error": "Missing hw_url",
+                "hw_error": "No image data provided",
             }
 
         try:
-            resp = requests.get(hw_url, timeout=10)
-            resp.raise_for_status()
-            image_bytes = resp.content
             input_tensor = self._preprocess(image_bytes)
             outputs = self.session.run(
                 [self.output_name],
@@ -70,15 +66,14 @@ class HandwritingService:
             pred_class = int(np.argmax(probs, axis=1)[0])
             class_names = ["healthy", "parkinson"]
             hw_prediction = class_names[pred_class] == "parkinson"
-            hw_confidence = float(probs[0, pred_class])
+            hw_confidence = round(float(probs[0, pred_class]) * 100)
             return {
                 "hw_prediction": hw_prediction,
-                "hw_confidence": hw_confidence,
+                "hw_confidence": f"{int(hw_confidence)}%",
                 "hw_error": None,
             }
         except Exception as e:
-
-            # Logging can be added here if needed
+            logger.error(f"Handwriting prediction error: {e}")
             return {
                 "hw_prediction": None,
                 "hw_confidence": None,

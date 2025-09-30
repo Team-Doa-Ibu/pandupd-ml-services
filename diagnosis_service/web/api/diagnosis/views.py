@@ -1,12 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, File, HTTPException, UploadFile
 from loguru import logger
 
 from diagnosis_service.services.handwriting import HandwritingService
 from diagnosis_service.services.voice_measurement import VoiceMeasurementService
-from diagnosis_service.web.api.diagnosis.schema import (
-    DiagnosisRequest,
-    DiagnosisResponse,
-)
+from diagnosis_service.web.api.diagnosis.schema import DiagnosisResponse
 
 router = APIRouter()
 
@@ -15,18 +12,29 @@ hw_service = HandwritingService()
 
 
 @router.post("/diagnosis", response_model=DiagnosisResponse)
-async def diagnose(request: DiagnosisRequest) -> DiagnosisResponse:
-    """Performs diagnosis based on the provided URLs."""
-    if not request.vm_url and not request.hw_url:
-        raise HTTPException(status_code=400, detail="No diagnosis URL provided.")
+async def diagnose(
+    vm_file: UploadFile = File(None, description="Voice measurement audio file"),
+    hw_file: UploadFile = File(None, description="Handwriting image file"),
+) -> DiagnosisResponse:
+    """Performs diagnosis based on the provided files."""
+    if not vm_file and not hw_file:
+        raise HTTPException(status_code=400, detail="No diagnosis files provided.")
 
     results = {}
     errors = []
 
     # Voice Measurement Diagnosis
-    if request.vm_url:
+    if vm_file:
         try:
-            vm_result = vm_service.predict_from_request(request.dict())
+            # Validate file type
+            if not vm_file.content_type or not vm_file.content_type.startswith(
+                "audio/",
+            ):
+                raise HTTPException(
+                    status_code=400, detail="Invalid audio file format.",
+                )
+
+            vm_result = vm_service.predict_from_file_content(await vm_file.read())
             results.update(
                 {
                     "vm_prediction": vm_result.get("vm_prediction"),
@@ -42,9 +50,17 @@ async def diagnose(request: DiagnosisRequest) -> DiagnosisResponse:
             errors.append("Voice measurement failed unexpectedly.")
 
     # Handwriting Diagnosis
-    if request.hw_url:
+    if hw_file:
         try:
-            hw_result = hw_service.predict_from_request(request.dict())
+            # Validate file type
+            if not hw_file.content_type or not hw_file.content_type.startswith(
+                "image/",
+            ):
+                raise HTTPException(
+                    status_code=400, detail="Invalid image file format.",
+                )
+
+            hw_result = hw_service.predict_from_file_content(await hw_file.read())
             results.update(
                 {
                     "hw_prediction": hw_result.get("hw_prediction"),
